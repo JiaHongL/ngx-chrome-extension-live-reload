@@ -1,0 +1,25 @@
+{
+  "name": "ngx-chrome-extension-live-reload",
+  "version": "0.0.1",
+  "description": "Angular schematics to add live reload to chrome extension",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && npm link",
+    "test": "npm run build && jasmine src/**/*_spec.js"
+  },
+  "keywords": [
+    "schematics"
+  ],
+  "author": "",
+  "license": "MIT",
+  "schematics": "./src/collection.json",
+  "dependencies": {
+    "@angular-devkit/core": "^17.0.6",
+    "@angular-devkit/schematics": "^17.0.6",
+    "typescript": "~5.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.18.0",
+    "@types/jasmine": "~5.1.0",
+    "jasmine": "^5.0.0"
+  }
+}
