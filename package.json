@@ -7,9 +7,21 @@
     "test": "npm run build && jasmine src/**/*_spec.js"
   },
   "keywords": [
+    "angular",
+    "chrome extension",
     "schematics"
   ],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JiaHongL/ngx-chrome-extension-live-reload"
+  },
+  "author": {
+    "name": "Joe",
+    "email": "joeyou30140@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/JiaHongL/ngx-chrome-extension-live-reload/issues"
+  },
   "license": "MIT",
   "schematics": "./src/collection.json",
   "dependencies": {
