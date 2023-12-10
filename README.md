@@ -30,3 +30,8 @@ npm start
 可到 [angular.dev](https://angular.dev/) 測試，如右下角有出現按鈕，即代表成功。
 
 ![Alt text](image-1.png)
+
+
+## 示範影片 (使用 ng 17.0.0 版本)
+
+[示範 ngx-chrome-extension-live-reload](https://youtu.be/_xsc8oIJoDk?si=vinYUIgEN7ntO0Gj)
