@@ -1,6 +1,6 @@
 # ngx-chrome-extension-live-reload
 
-這是一個 Angular 的 schematics，可以讓你在開發 Chrome Extension 時，自動 reload Chrome Extension。
+這是一個 Angular 的 schematics，可快速配置 Chrome Extension 的開發環境，讓你在開發時，可以自動 reload Chrome Extension。
 
 ## 使用方式
 
@@ -9,6 +9,11 @@ ng new my-app
 cd my-app
 ng add ngx-chrome-extension-live-reload
 npm start
+```
+
+```bash
+// 產出上架的 zip 檔案
+npm run build:extension
 ```
 
 ## 說明
