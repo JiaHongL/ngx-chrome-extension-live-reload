@@ -180,6 +180,7 @@ function updateAngularJson(options: any): Rule {
     // 設定開發模式
     architect.build.configurations.development = {
       optimization: false,
+      buildOptimizer: false,
       extractLicenses: false,
       sourceMap: true,
       namedChunks: true
