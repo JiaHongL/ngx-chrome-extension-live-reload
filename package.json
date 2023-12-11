@@ -3,8 +3,11 @@
   "version": "0.0.4",
   "description": "Angular schematics to add live reload to chrome extension",
   "scripts": {
-    "build": "tsc -p tsconfig.json && npm link",
-    "test": "npm run build && jasmine src/**/*_spec.js"
+    "build": "tsc -p tsconfig.json",
+    "link": "npm run build && npm link",
+    "unlink": "npm unlink ngx-chrome-extension-live-reload",
+    "test": "npm run build && jasmine src/**/*_spec.js",
+    "push": "npm run build && npm publish"
   },
   "keywords": [
     "angular",
