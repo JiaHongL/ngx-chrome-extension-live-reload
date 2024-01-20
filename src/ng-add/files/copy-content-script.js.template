@@ -1,7 +1,7 @@
 const fs = require("fs-extra");
 
 const sourceFilePath = "src/content-script.js";
-const targetFilePath = "dist/<%= dasherize(projectName) %>/content-script.js";
+const targetFilePath = "dist/<%= projectName %>/content-script.js";
 
 const args = process.argv.slice(2);
 const environment = args[0];

@@ -168,23 +168,44 @@ function updateAngularJson(options: any): Rule {
       architect.build.configurations.production.outputHashing = 'none';
     }
 
-    // 設定 esbuild
-    architect.build.builder = '@angular-devkit/build-angular:browser-esbuild';
-    architect.build.options.main = 'src/main.ts';
-
-    // 移除不必要的設定
-    if(architect.build.options.browser){
-      delete architect.build.options.browser;
+    // 如果 package.json devDependencies 的 @angular/cli 為 17.1.0 以上的版本，就不需要設定 esbuild
+    const packageJsonPath = '/package.json';
+    const packageJsonBuffer = tree.read(packageJsonPath);
+    if (packageJsonBuffer) {
+      const packageJson = JSON.parse(packageJsonBuffer.toString());
+      const angularCliVersion = packageJson.devDependencies['@angular/cli'];
+      if (angularCliVersion && angularCliVersion >= '17.1.0') {
+        // 設定 output path
+        const originalOutputPath = architect.build.options.outputPath;
+        architect.build.options.outputPath = {
+          "base": originalOutputPath,
+          "browser": ""
+        };
+        // 設定開發模式
+        architect.build.configurations.development = {
+          optimization: false,
+          extractLicenses: false,
+          sourceMap: true,
+          namedChunks: true
+        };
+      }else{
+        // 設定 esbuild
+        architect.build.builder = '@angular-devkit/build-angular:browser-esbuild';
+        architect.build.options.main = 'src/main.ts';
+        // 移除不必要的設定
+        if(architect.build.options.browser){
+          delete architect.build.options.browser;
+        }
+        // 設定開發模式
+        architect.build.configurations.development = {
+          optimization: false,
+          buildOptimizer: false,
+          extractLicenses: false,
+          sourceMap: true,
+          namedChunks: true
+        };
+      }
     }
-
-    // 設定開發模式
-    architect.build.configurations.development = {
-      optimization: false,
-      buildOptimizer: false,
-      extractLicenses: false,
-      sourceMap: true,
-      namedChunks: true
-    };
 
     tree.overwrite(angularJsonPath, JSON.stringify(angularJson, null, 2));
     
