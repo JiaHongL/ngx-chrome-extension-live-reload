@@ -1,0 +1,8 @@
+{
+  "extension_name": {
+    "message": "你的擴充名稱"
+  },
+  "extension_description": {
+    "message":  "你的擴充功能描述"
+  }
+}

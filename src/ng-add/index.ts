@@ -68,14 +68,15 @@ function updatePackageScripts(): Rule {
         "watch-extension": "node extension-watcher.js",
         "build:dev": "ng build --configuration development",
         "build:prod": "ng build",
+        "copy-locales": "node copy-locales.js",
         "copy-background:dev": "node copy-background.js dev",
         "copy-background:prod": "node copy-background.js prod",
-        "copy-all:dev": "npm-run-all copy-background:dev copy-content-script:dev",
+        "copy-all:dev": "npm-run-all copy-background:dev copy-content-script:dev copy-locales",
         "copy-content-script:dev": "node copy-content-script.js dev",
         "copy-content-script:prod": "node copy-content-script.js prod",
-        "copy-all:prod": "npm-run-all copy-background:prod copy-content-script:prod",
+        "copy-all:prod": "npm-run-all copy-background:prod copy-content-script:prod copy-locales",
         "zip-extension": "node zip-extension.js",
-        "build:extension": "npm-run-all build:prod copy-all:prod zip-extension",
+        "build:extension": "npm-run-all build:prod copy-all:prod zip-extension"
       };
 
       packageJson.scripts = { ...packageJson.scripts, ...newScripts };
