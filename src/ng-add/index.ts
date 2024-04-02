@@ -48,7 +48,6 @@ function addDependencies(): Rule {
     context.addTask(new NodePackageInstallTask({
       packageName: Object.entries(dependencies).map(([name, version]) => `${name}@${version}`).join(' ')
     }));
-    console.log('add dependencies');
     return tree;
   };
 }
@@ -84,7 +83,6 @@ function addDevDependencies(): Rule {
     context.addTask(new NodePackageInstallTask({
       packageName: Object.entries(devDependencies).map(([name, version]) => `${name}@${version}`).join(' ')
     }));
-    console.log('add devDependencies');
     return tree;
   };
 }
@@ -116,7 +114,6 @@ function updatePackageScripts(): Rule {
 
       tree.overwrite(packageJsonPath, JSON.stringify(packageJson, null, 2));
     }
-    console.log('update package scripts');
     return tree;
   };
 }
@@ -155,7 +152,6 @@ function removeAppFiles(): Rule {
     tree.getDir(normalize('src/app')).visit(filePath => {
       tree.delete(filePath);
     });
-    console.log('remove src files');
     return tree;
   };
 }
@@ -176,7 +172,6 @@ function deleteAppComponentFiles(): Rule {
         tree.delete(path);
       }
     });
-    console.log('delete app component files');
     return tree;
   };
 }
