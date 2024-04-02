@@ -36,12 +36,15 @@ watcher.on("change", (path) => {
       return;
     }
 
-    console.log("==> Build completed.");
+    console.log("==> ng build completed.");
 
-    exec("npm run copy-all:dev", (err, stdout, stderr) => {
+    exec("npm run webpack:build", (err, stdout, stderr) => {
 
-      console.log("==> Copied background.js and content-script.js to dist.");
-      
+      if (err) {
+        console.error("Error during build:", err);
+        return;
+      }
+
       wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
           client.send("reload");

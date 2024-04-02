@@ -24,13 +24,47 @@ function getProjectName(tree: Tree, _options: any): string {
   return workspaceConfig.defaultProject || projects[0];
 }
 
-function addDevPackages(): Rule {
+function addDependencies(): Rule {
+  return (tree: Tree, context: SchematicContext) => {
+
+    const dependencies: Record<string, string> = {
+      "@types/chrome": "0.0.263",
+    };
+
+    const packageJsonPath = '/package.json';
+    const packageJsonBuffer = tree.read(packageJsonPath);
+
+    if (packageJsonBuffer) {
+      const packageJson = JSON.parse(packageJsonBuffer.toString());
+      packageJson.dependencies = packageJson.dependencies || {};
+      Object.entries(dependencies).forEach(([name, version]) => {
+        if (!packageJson.dependencies[name]) {
+          packageJson.dependencies[name] = version;
+        }
+      });
+      tree.overwrite(packageJsonPath, JSON.stringify(packageJson, null, 2));
+    }
+
+    context.addTask(new NodePackageInstallTask({
+      packageName: Object.entries(dependencies).map(([name, version]) => `${name}@${version}`).join(' ')
+    }));
+    console.log('add dependencies');
+    return tree;
+  };
+}
+
+function addDevDependencies(): Rule {
   return (tree: Tree, context: SchematicContext) => {
 
     const devDependencies: Record<string, string> = {
       "archiver": "6.0.1",
       "chokidar": "3.5.3",
-      "npm-run-all": "4.1.5"
+      "npm-run-all": "4.1.5",
+      "copy-webpack-plugin": "12.0.2",
+      "ts-loader": "9.5.1",
+      "typescript": "5.3.2",
+      "webpack": "5.91.0",
+      "webpack-cli": "5.1.4"
     };
 
     const packageJsonPath = '/package.json';
@@ -50,7 +84,7 @@ function addDevPackages(): Rule {
     context.addTask(new NodePackageInstallTask({
       packageName: Object.entries(devDependencies).map(([name, version]) => `${name}@${version}`).join(' ')
     }));
-
+    console.log('add devDependencies');
     return tree;
   };
 }
@@ -64,42 +98,64 @@ function updatePackageScripts(): Rule {
       const packageJson = JSON.parse(packageJsonBuffer.toString());
 
       const newScripts = {
-        "start": "npm-run-all build:dev copy-all:dev watch-extension",
+        "ng": "ng",
+        "start": "npm-run-all build:dev webpack:build watch-extension",
+        "build": "ng build",
+        "watch": "ng build --watch --configuration development",
+        "test": "ng test",
         "watch-extension": "node extension-watcher.js",
+        "webpack:build": "webpack --config extra-webpack.config.js --env enableLiveReload=true",
+        "webpack:build:prod": "webpack --config extra-webpack.config.js --env enableLiveReload=false",
         "build:dev": "ng build --configuration development",
         "build:prod": "ng build",
-        "copy-locales": "node copy-locales.js",
-        "copy-background:dev": "node copy-background.js dev",
-        "copy-background:prod": "node copy-background.js prod",
-        "copy-all:dev": "npm-run-all copy-background:dev copy-content-script:dev copy-locales",
-        "copy-content-script:dev": "node copy-content-script.js dev",
-        "copy-content-script:prod": "node copy-content-script.js prod",
-        "copy-all:prod": "npm-run-all copy-background:prod copy-content-script:prod copy-locales",
         "zip-extension": "node zip-extension.js",
-        "build:extension": "npm-run-all build:prod copy-all:prod zip-extension"
+        "build:extension": "npm-run-all build:prod webpack:build:prod zip-extension"
       };
 
       packageJson.scripts = { ...packageJson.scripts, ...newScripts };
 
       tree.overwrite(packageJsonPath, JSON.stringify(packageJson, null, 2));
     }
+    console.log('update package scripts');
+    return tree;
+  };
+}
+
+function updateTsConfigTypes(): Rule {
+  return (tree: Tree, _context: SchematicContext) => {
+    const tsConfigPath = './tsconfig.app.json';
+    if (tree.exists(tsConfigPath)) {
+      const tsConfigBuffer = tree.read(tsConfigPath);
+      if (!tsConfigBuffer) {
+        return tree;
+      }
+      let tsConfigStr = tsConfigBuffer.toString();
+
+      // 使用正則表達式查找 "types": []，並替換成 "types": ["chrome"]
+      const typesRegex = /"types": \[\s*\]/;
+      if (typesRegex.test(tsConfigStr)) {
+        tsConfigStr = tsConfigStr.replace(typesRegex, `"types": ["chrome"]`);
+        tree.overwrite(tsConfigPath, tsConfigStr);
+      }
+    }
 
     return tree;
   };
 }
 
-function deleteRoutesFiles(): Rule {
+export function addChromeType(): Rule {
+  return (tree: Tree, context: SchematicContext) => {
+    const rule = updateTsConfigTypes();
+    return rule(tree, context);
+  };
+}
+
+function removeAppFiles(): Rule {
   return (tree: Tree, _context: SchematicContext) => {
-    const filesToDelete = [
-      '/src/app/app.routes.ts',
-    ];
-
-    filesToDelete.forEach(path => {
-      if (tree.exists(path)) {
-        tree.delete(path);
-      }
+    tree.getDir(normalize('src/app')).visit(filePath => {
+      tree.delete(filePath);
     });
-
+    console.log('remove src files');
     return tree;
   };
 }
@@ -120,7 +176,7 @@ function deleteAppComponentFiles(): Rule {
         tree.delete(path);
       }
     });
-
+    console.log('delete app component files');
     return tree;
   };
 }
@@ -169,6 +225,18 @@ function updateAngularJson(options: any): Rule {
       architect.build.configurations.production.outputHashing = 'none';
     }
 
+    // 修正 js 和 css 打包時遇到的問題
+    if (architect.build.configurations.production) {
+      architect.build.configurations.production.optimization = {
+        "scripts": true,
+        "styles": {
+          "minify": true,
+          "inlineCritical": false
+        },
+        "fonts": true
+      };
+    }
+
     // 如果 package.json devDependencies 的 @angular/cli 為 17.1.0 以上的版本，就不需要設定 esbuild
     const packageJsonPath = '/package.json';
     const packageJsonBuffer = tree.read(packageJsonPath);
@@ -184,10 +252,10 @@ function updateAngularJson(options: any): Rule {
         };
         // 設定開發模式
         architect.build.configurations.development = {
-          optimization: false,
-          extractLicenses: false,
-          sourceMap: true,
-          namedChunks: true
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
         };
       }else{
         // 設定 esbuild
@@ -216,10 +284,12 @@ function updateAngularJson(options: any): Rule {
 
 export function ngAdd(options: any): Rule {
   return chain([
-    addDevPackages(),
+    addDependencies(),
+    addDevDependencies(),
     updatePackageScripts(),
+    addChromeType(),
     deleteAppComponentFiles(),
-    deleteRoutesFiles(),
+    removeAppFiles(),
     addFiles(options),
     updateAngularJson(options),
   ]);

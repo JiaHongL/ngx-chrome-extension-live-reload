@@ -1,24 +1,16 @@
-import { ApplicationRef, Component, ComponentRef, ViewContainerRef, inject } from '@angular/core';
+import { Component} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { GoToTopComponent } from './go-to-top/go-to-top.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule],
-  template: ``,
+  imports: [
+    CommonModule,
+    RouterOutlet
+  ],
+  template: ` <router-outlet />`,
   styles: [],
 })
-export class AppComponent {
-
-  private componentRef: ComponentRef<GoToTopComponent>;
-  viewContainerRef = inject(ViewContainerRef);
-  appRef = inject(ApplicationRef);
-
-  constructor() {
-    this.componentRef = this.viewContainerRef.createComponent(GoToTopComponent);
-    document.body.appendChild(this.componentRef.location.nativeElement);
-  }
-
-}
+export class AppComponent {}

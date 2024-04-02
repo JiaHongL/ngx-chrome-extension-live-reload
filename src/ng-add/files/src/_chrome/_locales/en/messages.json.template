@@ -1,0 +1,8 @@
+{
+  "extension_name": {
+    "message": "your_name"
+  },
+  "extension_description": {
+    "message":  "your_description"
+  }
+}
