@@ -7,7 +7,7 @@
     "link": "npm run build && npm link",
     "unlink": "npm unlink ngx-chrome-extension-live-reload",
     "test": "npm run build && jasmine src/**/*_spec.js",
-    "push": "npm run build && npm publish"
+    "publish": "npm run build && npm publish"
   },
   "keywords": [
     "angular",
