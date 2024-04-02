@@ -13,7 +13,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       <button (click)="openOptionsPage()">Open Options Page</button>
     </div>
   `,
-  styleUrl: './popup.component.css',
+  styleUrl: './popup.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PopupComponent {

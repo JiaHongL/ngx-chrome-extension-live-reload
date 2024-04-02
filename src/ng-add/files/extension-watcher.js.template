@@ -45,6 +45,8 @@ watcher.on("change", (path) => {
         return;
       }
 
+      console.log("==> webpack build completed.");
+
       wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
           client.send("reload");
