@@ -156,26 +156,6 @@ function removeAppFiles(): Rule {
   };
 }
 
-function deleteAppComponentFiles(): Rule {
-  return (tree: Tree, _context: SchematicContext) => {
-    const filesToDelete = [
-      '/src/app/app.component.ts',
-      '/src/app/app.component.html',
-      '/src/app/app.component.css',
-      '/src/app/app.component.scss',
-      '/src/app/app.component.sass',
-      '/src/app/app.component.less'
-    ];
-
-    filesToDelete.forEach(path => {
-      if (tree.exists(path)) {
-        tree.delete(path);
-      }
-    });
-    return tree;
-  };
-}
-
 function addFiles(options: any): Rule {
   return (_tree: Tree, _context: SchematicContext) => {
 
@@ -283,7 +263,6 @@ export function ngAdd(options: any): Rule {
     addDevDependencies(),
     updatePackageScripts(),
     addChromeType(),
-    deleteAppComponentFiles(),
     removeAppFiles(),
     addFiles(options),
     updateAngularJson(options),
