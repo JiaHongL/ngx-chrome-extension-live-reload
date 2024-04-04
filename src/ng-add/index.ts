@@ -61,7 +61,6 @@ function addDevDependencies(): Rule {
       "npm-run-all": "4.1.5",
       "copy-webpack-plugin": "12.0.2",
       "ts-loader": "9.5.1",
-      "typescript": "5.3.2",
       "webpack": "5.91.0",
       "webpack-cli": "5.1.4"
     };
