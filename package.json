@@ -1,6 +1,6 @@
 {
   "name": "ngx-chrome-extension-live-reload",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Angular schematics to add live reload to chrome extension",
   "scripts": {
     "build": "tsc -p tsconfig.json",
