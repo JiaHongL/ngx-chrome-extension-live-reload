@@ -37,7 +37,7 @@ try {
 
 if (process.env['ENABLE_LIVE_RELOAD']) {
   // 定時戳一下，讓背景程式不要進入睡眠狀態
-  setInterval(function(){
+  const intervalId = setInterval(function(){
     try {
       chrome.runtime.sendMessage({ command: "wake up!" }).then((response) => {
         // console.log("response", response);
@@ -45,6 +45,7 @@ if (process.env['ENABLE_LIVE_RELOAD']) {
     }
     catch (e) {
       // chrome extension 已刷新，需重新載入頁面，取得最新的 chrome object
+      clearInterval(intervalId);
       location.reload();
       console.log("e", e);
     }
