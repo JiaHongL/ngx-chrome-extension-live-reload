@@ -157,9 +157,18 @@ function removeAppFiles(): Rule {
 
 function addFiles(options: any): Rule {
   return (_tree: Tree, _context: SchematicContext) => {
-
-    const sourceTemplates = url('./files');
+    let sourceTemplates = url('./files');
     const projectName = getProjectName(_tree, options);
+
+    const packageJsonPath = '/package.json';
+    const packageJsonBuffer = _tree.read(packageJsonPath);
+    if (packageJsonBuffer) {
+      const packageJson = JSON.parse(packageJsonBuffer.toString());
+      const angularCliVersion = packageJson.devDependencies['@angular/cli'];
+      if (angularCliVersion && angularCliVersion >= '18.0.0') {
+        sourceTemplates = url('./files2');
+      }
+    }
 
     const sourceParametrizedTemplates = apply(sourceTemplates, [
       applyTemplates({

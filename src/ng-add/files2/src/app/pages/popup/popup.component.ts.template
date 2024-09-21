@@ -1,0 +1,23 @@
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+
+@Component({
+  selector: 'app-popup',
+  standalone: true,
+  imports: [
+    CommonModule,
+  ],
+  template: `
+    <div class="popup-page">
+      <h1>Popup</h1>
+      <button (click)="openOptionsPage()">Open Options Page</button>
+    </div>
+  `,
+  styleUrl: './popup.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class PopupComponent {
+  openOptionsPage() {
+    chrome.runtime.openOptionsPage();
+  }
+}
